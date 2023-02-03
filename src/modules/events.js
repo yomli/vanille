@@ -8,7 +8,7 @@ const when_ready = (funct) => window.addEventListener('DOMContentLoaded', funct,
 const on = (ev, obj, funct, opts = false) => {
 	obj = (obj === '' || typeof obj === 'undefined') ? window.document : _(obj);
 	if (!obj[0]) obj.addEventListener(ev, funct, opts);
-	else obj.map(el => { el.addEventListener(ev, funct, opts); });
+	else for (let el of obj) el.addEventListener(ev, funct, opts);
 };
 
 // Usage: onDomChange(function);

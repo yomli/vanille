@@ -7,7 +7,7 @@ const addClass = (obj, classname) => {
 		else el.className += ' ' + cl;
 	};
 	if (!obj[0]) _acl(obj, classname);
-	else obj.map(el => { _acl(el, classname) });
+	else obj.forEach(_acl(el, classname));
 };
 
 const removeClass = (obj, classname) => {
@@ -17,7 +17,7 @@ const removeClass = (obj, classname) => {
 		else el.className = el.className.replace(new RegExp('(^| )' + cl.split(' ').join('|') + '( |$)', 'gi'), ' ');
 	};
 	if (!obj[0]) _rcl(obj, classname);
-	else obj.map(el => { _rcl(obj, classname); });
+	else obj.forEach(_rcl(obj, classname));
 };
 
 const toggleClass = (obj, classname) => {
@@ -33,7 +33,7 @@ const toggleClass = (obj, classname) => {
 		}
 	};
 	if (!obj[0]) _tcl(obj, classname);
-	else obj.map(el => { _tcl(el, classname); });
+	else obj.forEach(_tcl(el, classname));
 };
 
 const hasClass = (obj, classname) => {

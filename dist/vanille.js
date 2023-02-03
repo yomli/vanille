@@ -75,7 +75,7 @@ const $$ = (str) => new Vanille($(str));
 // Generate a GUID
 // Returns: '9b259142-4421-4d36-bd7c-19d4f50a95ed'
 const newUUID = () => {
-	([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+	return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
 		(c ^
 			(crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
 		).toString(16)
@@ -93,9 +93,27 @@ const getSelectedText = () => window.getSelection().toString();
 // Get HTML without tags
 const strigTags = (html) => (new DOMParser().parseFromString(html, 'text/html')).body.textContent || '';
 
+// Get a string with accented characters replaced by their ASCII counterpart
+// Returns "Creme brulee"
+const replaceAccents = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
 // Get url-compatible string
 // Returns 'my-compatible-string'
 const urlSlug = (str) => str.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+
+// Encode string to base64
+const encodeBase64 = (str) => window.btoa(unescape(encodeURIComponent(str)));
+
+// Decode string from base64 to ASCII
+const decodeBase64 = (str) => {
+	let r = window.atob(str), ret = r;
+	try {
+		ret = decodeURIComponent(escape(r));
+	} catch (e) {
+		return r;
+	}
+	return ret;
+};
 
 // Arrays
 
@@ -157,14 +175,10 @@ let _txtTarget = (txt, target) => {
 		target = _(target);
 		if (target instanceof HTMLInputElement) { // If it's an input element
 			target.value = txt;
-		} else if (!target.length) {
+		} else if (!target[0]) {
 			target.innerHTML = txt;
 		} else if (target.length) {
-			target.map(el => {
-				if (el instanceof Element) {
-					el.innerHTML = txt;
-				}
-			});
+			for (let el of target) el.innerHTML = txt;
 		}
 	}
 };
@@ -238,7 +252,7 @@ const addClass = (obj, classname) => {
 		else el.className += ' ' + cl;
 	};
 	if (!obj[0]) _acl(obj, classname);
-	else obj.map(el => { _acl(el, classname) });
+	else obj.forEach(_acl(el, classname));
 };
 
 const removeClass = (obj, classname) => {
@@ -248,7 +262,7 @@ const removeClass = (obj, classname) => {
 		else el.className = el.className.replace(new RegExp('(^| )' + cl.split(' ').join('|') + '( |$)', 'gi'), ' ');
 	};
 	if (!obj[0]) _rcl(obj, classname);
-	else obj.map(el => { _rcl(obj, classname); });
+	else obj.forEach(_rcl(obj, classname));
 };
 
 const toggleClass = (obj, classname) => {
@@ -264,7 +278,7 @@ const toggleClass = (obj, classname) => {
 		}
 	};
 	if (!obj[0]) _tcl(obj, classname);
-	else obj.map(el => { _tcl(el, classname); });
+	else obj.forEach(_tcl(el, classname));
 };
 
 const hasClass = (obj, classname) => {
@@ -276,8 +290,8 @@ const hasClass = (obj, classname) => {
 const create = (type, att = '') => {
 	let obj = document.createElement(type);
 	if (att) {
-		for (let [key, val] of Object.entries(opts)) {
-			attr(obj, key, value);
+		for (let [key, val] of Object.entries(att)) {
+			attr(obj, key, val);
 		}
 	}
 	if (attr(obj, 'id') == null) attr(obj, 'id' , type + '_' + Math.random().toString(16).substr(6, 14));
@@ -286,42 +300,42 @@ const create = (type, att = '') => {
 const clone = (obj) => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) return obj.cloneNode();
-	else obj.map(el => { el.cloneNode(); });
+	else for (let el of obj) el.cloneNode();
 };
 const remove = (obj) => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) obj.parentNode.removeChild(obj);
-	else obj.map(el => { el.parentNode.removeChild(el); });
+	else for (let el of obj) el.parentNode.removeChild(el);
 };
 const replace = (obj, newObj) => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) obj.parentNode.replaceChild(newObj, obj);
-	else obj.map(el => { el.parentNode.replaceChild(newObj, el); });
+	else for (let el of obj) el.parentNode.replaceChild(newObj, el);
 };
 const prepend = (obj, content) => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) obj.innerHTML = content + obj.innerHTML;
-	else obj.map(el => { el.innerHTML = content + el.innerHTML; });
+	else for (let el of obj) el.innerHTML = content + el.innerHTML;
 };
 const append = (obj, content) => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) obj.innerHTML+= content;
-	else obj.map(el => { el.innerHTML+= content; });
+	else for (let el of obj) el.innerHTML+= content;
 };
 const before = (obj, content) => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) obj.insertAdjacentHTML('beforebegin', content);
-	else obj.map(el => { el.insertAdjacentHTML('beforebegin', content); });
+	else for (let el of obj) el.insertAdjacentHTML('beforebegin', content);
 };
 const after = (obj, content) => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) obj.insertAdjacentHTML('afterend', content);
-	else obj.map(el => { el.insertAdjacentHTML('afterend', content); });
+	else for (let el of obj) el.insertAdjacentHTML('afterend', content);
 };
 const clear = (obj) => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) obj.innerHTML = '';
-	else obj.map(el => { el.innerHTML = ''; });
+	else for (let el of obj) el.innerHTML = '';
 };
 
 // Attributes
@@ -334,10 +348,10 @@ const attr = (obj, att, val) => {
 			else return false;
 		}
 	} else {
-		if (val != undefined) { obj.map(el => { el.setAttribute(att, val); }); }
+		if (val != undefined) { for (let el of obj) el.setAttribute(att, val); }
 		else {
 			let attList = [];
-			obj.map(el => { attList[el] = el.getAttribute(att); });
+			for (let el of obj) attList[el] = el.getAttribute(att);
 			return attList;
 		}
 	}
@@ -345,7 +359,7 @@ const attr = (obj, att, val) => {
 const removeAttr = (obj, att) => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) obj.removeAttribute(att);
-	else obj.map(el => { el.removeAttribute(att); });
+	else for (let el of obj) el.removeAttribute(att);
 
 };
 const style = (obj, css) => { return attr(obj, 'style', css) };
@@ -412,7 +426,7 @@ const when_ready = (funct) => window.addEventListener('DOMContentLoaded', funct,
 const on = (ev, obj, funct, opts = false) => {
 	obj = (obj === '' || typeof obj === 'undefined') ? window.document : _(obj);
 	if (!obj[0]) obj.addEventListener(ev, funct, opts);
-	else obj.map(el => { el.addEventListener(ev, funct, opts); });
+	else for (let el of obj) el.addEventListener(ev, funct, opts);
 };
 
 // Usage: onDomChange(function);
@@ -445,7 +459,7 @@ const form2json = (form) => {
 const show = (obj, type = '') => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) obj.style.display = type;
-	else obj.map(el => { el.style.display = type; });
+	else for (let el of obj) el.style.display = type;
 };
 const hide = (obj) => { show(obj, 'none'); };
 const toggle = (obj, type = '') => {
@@ -455,5 +469,5 @@ const toggle = (obj, type = '') => {
 		else return val1;
 	};
 	if (!obj[0]) obj.style.display = _tgl(obj.style.display, 'none', type);
-	else obj.map(el => { el.style.display = _tgl(el.style.display, 'none', type); });
+	else for (let el of obj) el.style.display = _tgl(el.style.display, 'none', type);
 };

@@ -3,7 +3,7 @@
 // Generate a GUID
 // Returns: '9b259142-4421-4d36-bd7c-19d4f50a95ed'
 const newUUID = () => {
-	([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+	return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
 		(c ^
 			(crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
 		).toString(16)
@@ -21,9 +21,27 @@ const getSelectedText = () => window.getSelection().toString();
 // Get HTML without tags
 const strigTags = (html) => (new DOMParser().parseFromString(html, 'text/html')).body.textContent || '';
 
+// Get a string with accented characters replaced by their ASCII counterpart
+// Returns "Creme brulee"
+const replaceAccents = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
 // Get url-compatible string
 // Returns 'my-compatible-string'
 const urlSlug = (str) => str.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+
+// Encode string to base64
+const encodeBase64 = (str) => window.btoa(unescape(encodeURIComponent(str)));
+
+// Decode string from base64 to ASCII
+const decodeBase64 = (str) => {
+	let r = window.atob(str), ret = r;
+	try {
+		ret = decodeURIComponent(escape(r));
+	} catch (e) {
+		return r;
+	}
+	return ret;
+};
 
 // Arrays
 

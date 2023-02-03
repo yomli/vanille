@@ -6,14 +6,10 @@ let _txtTarget = (txt, target) => {
 		target = _(target);
 		if (target instanceof HTMLInputElement) { // If it's an input element
 			target.value = txt;
-		} else if (!target.length) {
+		} else if (!target[0]) {
 			target.innerHTML = txt;
 		} else if (target.length) {
-			target.map(el => {
-				if (el instanceof Element) {
-					el.innerHTML = txt;
-				}
-			});
+			for (let el of target) el.innerHTML = txt;
 		}
 	}
 };

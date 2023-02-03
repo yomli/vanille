@@ -2,8 +2,8 @@
 const create = (type, att = '') => {
 	let obj = document.createElement(type);
 	if (att) {
-		for (let [key, val] of Object.entries(opts)) {
-			attr(obj, key, value);
+		for (let [key, val] of Object.entries(att)) {
+			attr(obj, key, val);
 		}
 	}
 	if (attr(obj, 'id') == null) attr(obj, 'id' , type + '_' + Math.random().toString(16).substr(6, 14));
@@ -12,42 +12,42 @@ const create = (type, att = '') => {
 const clone = (obj) => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) return obj.cloneNode();
-	else obj.map(el => { el.cloneNode(); });
+	else for (let el of obj) el.cloneNode();
 };
 const remove = (obj) => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) obj.parentNode.removeChild(obj);
-	else obj.map(el => { el.parentNode.removeChild(el); });
+	else for (let el of obj) el.parentNode.removeChild(el);
 };
 const replace = (obj, newObj) => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) obj.parentNode.replaceChild(newObj, obj);
-	else obj.map(el => { el.parentNode.replaceChild(newObj, el); });
+	else for (let el of obj) el.parentNode.replaceChild(newObj, el);
 };
 const prepend = (obj, content) => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) obj.innerHTML = content + obj.innerHTML;
-	else obj.map(el => { el.innerHTML = content + el.innerHTML; });
+	else for (let el of obj) el.innerHTML = content + el.innerHTML;
 };
 const append = (obj, content) => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) obj.innerHTML+= content;
-	else obj.map(el => { el.innerHTML+= content; });
+	else for (let el of obj) el.innerHTML+= content;
 };
 const before = (obj, content) => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) obj.insertAdjacentHTML('beforebegin', content);
-	else obj.map(el => { el.insertAdjacentHTML('beforebegin', content); });
+	else for (let el of obj) el.insertAdjacentHTML('beforebegin', content);
 };
 const after = (obj, content) => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) obj.insertAdjacentHTML('afterend', content);
-	else obj.map(el => { el.insertAdjacentHTML('afterend', content); });
+	else for (let el of obj) el.insertAdjacentHTML('afterend', content);
 };
 const clear = (obj) => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) obj.innerHTML = '';
-	else obj.map(el => { el.innerHTML = ''; });
+	else for (let el of obj) el.innerHTML = '';
 };
 
 // Attributes
@@ -60,10 +60,10 @@ const attr = (obj, att, val) => {
 			else return false;
 		}
 	} else {
-		if (val != undefined) { obj.map(el => { el.setAttribute(att, val); }); }
+		if (val != undefined) { for (let el of obj) el.setAttribute(att, val); }
 		else {
 			let attList = [];
-			obj.map(el => { attList[el] = el.getAttribute(att); });
+			for (let el of obj) attList[el] = el.getAttribute(att);
 			return attList;
 		}
 	}
@@ -71,7 +71,7 @@ const attr = (obj, att, val) => {
 const removeAttr = (obj, att) => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) obj.removeAttribute(att);
-	else obj.map(el => { el.removeAttribute(att); });
+	else for (let el of obj) el.removeAttribute(att);
 
 };
 const style = (obj, css) => { return attr(obj, 'style', css) };

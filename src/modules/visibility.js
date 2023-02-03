@@ -2,7 +2,7 @@
 const show = (obj, type = '') => {
 	obj = _(obj); if (!obj || obj.length == 0) { return false; }
 	if (!obj[0]) obj.style.display = type;
-	else obj.map(el => { el.style.display = type; });
+	else for (let el of obj) el.style.display = type;
 };
 const hide = (obj) => { show(obj, 'none'); };
 const toggle = (obj, type = '') => {
@@ -12,5 +12,5 @@ const toggle = (obj, type = '') => {
 		else return val1;
 	};
 	if (!obj[0]) obj.style.display = _tgl(obj.style.display, 'none', type);
-	else obj.map(el => { el.style.display = _tgl(el.style.display, 'none', type); });
+	else for (let el of obj) el.style.display = _tgl(el.style.display, 'none', type);
 };
